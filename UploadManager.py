@@ -9,10 +9,12 @@ from pythonfix import *  # pylint: disable=W0401
 from my_mock import package_from_filename
 
 
-class UploadManager(object):
-    # pylint: disable=R0201,R0903
+class BasicUploadManager(object):
+    # pylint: disable=R0903
+
     """Mostly for testing purposes and as a debugging replacement
        for ThreadedUploadManager."""
+
     def __init__(self, uploader):
         self._uploader = uploader
 
@@ -28,10 +30,12 @@ class UploadManager(object):
 # (make your own, its easy)
 END_OF_TASKS = object()
 
-class ThreadedUploadManager(UploadManager):
-    # pylint: disable=R0201,R0903
-    def __init__(self, filename, queuesize=3):
-        UploadManager.__init__(self, filename)
+
+class ThreadedUploadManager(BasicUploadManager):
+    # pylint: disable=R0903
+
+    def __init__(self, uploader, queuesize=3):
+        super(ThreadedUploadManager, self).__init__(uploader)
         self._queue = Queue.Queue(queuesize)
 
     def upload(self, filenames):
@@ -44,8 +48,8 @@ class ThreadedUploadManager(UploadManager):
                 package = self._queue.get()
             self._queue.task_done()
 
-        t = threading.Thread(target=worker)
-        t.start()
+        thread = threading.Thread(target=worker)
+        thread.start()
 
         for filename in filenames:
             package = package_from_filename(filename)
@@ -53,4 +57,4 @@ class ThreadedUploadManager(UploadManager):
 
         self._queue.put(END_OF_TASKS)
         self._queue.join()
-        t.join()
+        thread.join()

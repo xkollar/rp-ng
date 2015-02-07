@@ -2,18 +2,17 @@
 # Remember: A comment is a lie waiting to happen.
 #
 
-import Queue
 import itertools
 import os
-import threading
-import time
-
-from optparse import Option, OptionParser
+import sys
 
 from pythonfix import *  # pylint: disable=W0401
 from my_mock import Uploader
 from UploadManager import ThreadedUploadManager as UploadManager
-# from UploadManager import UploadManager
+# from UploadManager import BasicUploadManager
+
+from app_config_declaration import APP_CONFIG_DECLARATION
+from ConfigDeclaration import AppConfig
 
 
 class RhnPushError(Exception):
@@ -42,18 +41,11 @@ def gen_filenames(files, dirs):
 
 
 def main():
-    optlist = [
-        Option('-d', '--dir', action='append', type='string', dest='dirs'),
-        ]
+    app_config = AppConfig(APP_CONFIG_DECLARATION)
+    opts, args = app_config.parse_args(sys.argv[1:])
 
-    parser = OptionParser(option_list=optlist)
-    opts, args = parser.parse_args([
-        "-d", "testdir/package-dir",
-        "testdir/package-x.rpm"])
-
-    # um = ThreadedUploadManager(Uploader())
-    um = UploadManager(Uploader())
-    um.upload(gen_filenames(args, opts.dirs))
+    upload_manager = UploadManager(Uploader())
+    upload_manager.upload(gen_filenames(args, opts.dirs))
 
 if __name__ == '__main__':
     main()
