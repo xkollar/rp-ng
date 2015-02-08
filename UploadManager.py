@@ -44,9 +44,9 @@ class ThreadedUploadManager(BasicUploadManager):
             package = self._queue.get()
             while package is not END_OF_TASKS:
                 self._upload(package)
-                self._queue.task_done()
+                # self._queue.task_done()
                 package = self._queue.get()
-            self._queue.task_done()
+            # self._queue.task_done()
 
         thread = threading.Thread(target=worker)
         thread.start()
@@ -56,5 +56,5 @@ class ThreadedUploadManager(BasicUploadManager):
             self._queue.put(package)
 
         self._queue.put(END_OF_TASKS)
-        self._queue.join()
+        # self._queue.join()
         thread.join()
