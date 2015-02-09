@@ -88,7 +88,6 @@ class BaseType(object):
         setattr(parser.values, option.dest, self.value)
 
     def optparse_option_kwargs(self):
-        "Prepare Option for optparse OptionParser"
         return self.kwargs
 
 
