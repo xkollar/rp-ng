@@ -80,7 +80,7 @@ class BaseType(object):
         pass
 
     @unimplemented
-    def _value_callback(_self, _value):
+    def _value_callback(self, _value):
         pass
 
     def _callback(self, option, _opt_str, value, parser, *_args, **_kwargs):
@@ -101,7 +101,7 @@ class Const(BaseType):
         })
         self._callback_value = None
 
-    def _value_callback(self, *args):
+    def _value_callback(self, _):
         self.value = self._callback_value
 
     @fluent

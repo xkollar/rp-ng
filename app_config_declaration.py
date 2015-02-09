@@ -68,7 +68,8 @@ APP_CONFIG_DECLARATION = {
             default=False,
             cmd_options=['--force'],
             cfg_item_name='force',
-            help_text='force the package upload (overwrites if already uploaded)',
+            help_text='force the package upload '
+                '(overwrites if already uploaded)',
             doc_text=None
         )
     ]
