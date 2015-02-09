@@ -4,7 +4,10 @@ from utils import usual_config_files
 
 APP_CONFIG_DECLARATION = {
     'doc': 'This is a cool application',
-    'config_files': usual_config_files('rhnpush', sysdir='/etc/sysconfig/rhn'),
+    'config_files': usual_config_files(
+        'rhnpushrc',
+        sysdir='/etc/sysconfig/rhn'
+    ),
     'config_section': 'rhnpush',
     'app_usage': '%prog [option] [package]',
     'config_description': [
@@ -55,7 +58,7 @@ APP_CONFIG_DECLARATION = {
         ),
         C.ConfigOption(
             dest='nosig',
-            x_type=C.Const().with_value(True),
+            x_type=C.ConstBool().with_value(True),
             default=False,
             cmd_options=['--nosig'],
             cfg_item_name='nosig',
@@ -64,12 +67,12 @@ APP_CONFIG_DECLARATION = {
         ),
         C.ConfigOption(
             dest='force',
-            x_type=C.Const().with_value(True),
+            x_type=C.ConstBool().with_value(True),
             default=False,
             cmd_options=['--force'],
             cfg_item_name='force',
             help_text='force the package upload '
-                '(overwrites if already uploaded)',
+            '(overwrites if already uploaded)',
             doc_text=None
         )
     ]

@@ -108,6 +108,12 @@ class Const(BaseType):
         self._callback_value = value
 
 
+class ConstBool(Const):
+    @staticmethod
+    def from_string(string):
+        return string in ('1', )
+
+
 class String(BaseType, MetavarMixin):
     def __init__(self):
         super(String, self).__init__()
@@ -188,7 +194,11 @@ class DirList(StringList):
         return super(DirList, self)._value_callback(value)
 
 
+CONFIG_VALUE_UNSET = object()
+
+
 class AppConfig(object):
+    # pylint: disable=R0903
 
     def __init__(self, declaration):
         assert isinstance(declaration, dict)
@@ -203,13 +213,19 @@ class AppConfig(object):
             ]
         }
 
-    def process_configs(self):
+    def _get_files_config(self):
         schema = self._get_config_schema()
         config = ConfigParser.ConfigParser()
         config.read(self._declaration.get('config_files'))
         verify(config, schema, strict=False)
 
+        section = self._declaration.get('config_section')
+        if config.has_section(section):
+            return dict(config.items(self._declaration.get('config_section')))
+        return {}
+
     def _get_option_parser(self):
+        files_config = self._get_files_config()
         parser = optparse.OptionParser(
             conflict_handler='error',
             usage=self._declaration.get('app_usage')
@@ -220,10 +236,17 @@ class AppConfig(object):
 
             x_type = element.x_type
 
+            default = files_config.get(
+                element.cfg_item_name,
+                CONFIG_VALUE_UNSET)
+            if default is CONFIG_VALUE_UNSET:
+                default = element.default
+            else:
+                default = x_type.from_string(default)
+
             help_text = element.help_text
             if x_type.help_note:
                 help_text = '%s; %s' % (help_text, x_type.help_note)
-            default = element.default
             if default is not None:
                 help_text = '%s; default: %s' % (help_text, repr(default))
 
