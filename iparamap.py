@@ -30,6 +30,7 @@ def iparamap(fun, iterator, queue_size=3):
         ret_item = queue.get()
     thread.join()
 
+# TEST
 
 if __name__ == '__main__':
     import time
