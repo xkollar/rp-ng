@@ -11,45 +11,43 @@ NO_MORE_TASKS = object()
 def iparamap(fun, iterator, queue_size=3):
     def worker(queue):
         try:
-            for item in iterator:
-                value = fun(item)
+            for in_item in iterator:
+                value = fun(in_item)
                 queue.put(value)
-        except Exception, e:
-            queue.put(e)
+        except Exception, exn:  # pylint: disable=W0703
+            queue.put(exn)
         queue.put(NO_MORE_TASKS)
 
     queue = Queue.Queue(queue_size)
     thread = threading.Thread(target=worker, args=(queue,))
     thread.start()
 
-    item = queue.get()
-    while item is not NO_MORE_TASKS:
-        if isinstance(item, Exception):
-            raise item
-        yield item
-        item = queue.get()
+    ret_item = queue.get()
+    while ret_item is not NO_MORE_TASKS:
+        if isinstance(ret_item, Exception):
+            raise ret_item
+        yield ret_item
+        ret_item = queue.get()
     thread.join()
 
 
 if __name__ == '__main__':
     import time
 
-    def fun1(x):
+    def fun1(val):
         time.sleep(1)
-        return x + 100
+        return val + 100
 
-    def fun2(x):
-        raise Exception("WHOA!")
+    def fun2(_val):
         time.sleep(1)
-        return x * 2
+        raise Exception("WHOA!")
 
     def my_gen():
         raise Exception("Whoa gen!")
-        yield 0
 
     try:
-        for item in iparamap(fun1, iparamap(fun1, xrange(10))):
-            print 'Main: Processing %s...' % item
+        for x_item in iparamap(fun1, iparamap(fun1, xrange(10))):
+            print 'Main: Processing %s...' % x_item
             time.sleep(5)
-    except Exception, e:
-        print 'PFS!', e.message
+    except Exception, exn:  # pylint: disable=W0703
+        print 'PFS!', exn.message
