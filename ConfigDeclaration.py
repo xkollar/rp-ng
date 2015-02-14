@@ -225,7 +225,7 @@ class AppConfig(object):
         return {}
 
     def _get_option_parser(self):
-        files_config = self._get_files_config()
+        config_from_files = self._get_files_config()
         parser = optparse.OptionParser(
             conflict_handler='error',
             usage=self._declaration.get('app_usage')
@@ -234,9 +234,10 @@ class AppConfig(object):
 
             x_type = element.x_type
 
-            default = files_config.get(
+            default = config_from_files.get(
                 element.cfg_item_name,
-                CONFIG_VALUE_UNSET)
+                CONFIG_VALUE_UNSET
+            )
             if default is CONFIG_VALUE_UNSET:
                 default = element.default
             else:
