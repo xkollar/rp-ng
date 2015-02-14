@@ -231,8 +231,6 @@ class AppConfig(object):
             usage=self._declaration.get('app_usage')
         )
         for element in self._declaration.get('config_description'):
-            if not element.cmd_options:  # ...is non-empty list.
-                continue
 
             x_type = element.x_type
 
@@ -244,6 +242,11 @@ class AppConfig(object):
             else:
                 default = x_type.from_string(default)
 
+            parser.set_defaults(**{element.dest: default})
+
+            if not element.cmd_options:  # ...is non-empty list.
+                continue
+
             help_text = element.help_text
             if x_type.help_note:
                 help_text = '%s; %s' % (help_text, x_type.help_note)
@@ -254,7 +257,6 @@ class AppConfig(object):
                 element.x_type.optparse_option_kwargs(),
                 {
                     'dest': element.dest,
-                    'default': default,
                     'help': help_text
                 }
             ))
