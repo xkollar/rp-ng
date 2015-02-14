@@ -57,6 +57,24 @@ APP_CONFIG_DECLARATION = {
             doc_text=None
         ),
         C.ConfigOption(
+            dest='server',
+            x_type=C.String().with_metavar('HOSTNAME'),
+            default=None,
+            cmd_options=['--server'],
+            cfg_item_name='proxy',
+            help_text='push to server (http[s]://<HOSTNAME>/APP)',
+            doc_text=None
+        ),
+        C.ConfigOption(
+            dest='proxy',
+            x_type=C.String().with_metavar('HOST:PORT'),
+            default=None,
+            cmd_options=['--proxy'],
+            cfg_item_name='proxy',
+            help_text='use proxy server',
+            doc_text=None
+        ),
+        C.ConfigOption(
             dest='nosig',
             x_type=C.ConstBool().with_value(True),
             default=False,
